@@ -43,3 +43,14 @@ export const useAddFoo = () => {
         },
     });
 };
+
+export const useEvents = () => useQuery({
+    queryKey: ['events'],
+    queryFn: () => fromSupabase(supabase.from('events').select('*')),
+    onError: (error) => {
+        console.error('Error fetching events:', error);
+    },
+    onSettled: () => {
+        console.log('Fetched events data');
+    },
+});
