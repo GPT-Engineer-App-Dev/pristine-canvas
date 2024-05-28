@@ -21,16 +21,25 @@ const fromSupabase = async (query) => {
 
 // EXAMPLE HOOKS SECTION
 
-export const useFoo = ()=> useQuery({
+export const useFoo = () => useQuery({
     queryKey: ['foo'],
-    queryFn: fromSupabase(supabase.from('foo').select('*,bars(*)')),
-})
+    queryFn: () => fromSupabase(supabase.from('foo').select('*,bars(*)')),
+    onError: (error) => {
+        console.error('Error fetching foo:', error);
+    },
+    onSettled: () => {
+        console.log('Fetched foo data');
+    },
+});
 export const useAddFoo = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (newFoo)=> fromSupabase(supabase.from('foo').insert([{ title: newFoo.title }])),
-        onSuccess: ()=> {
+        mutationFn: (newFoo) => fromSupabase(supabase.from('foo').insert([{ title: newFoo.title }])),
+        onSuccess: () => {
             queryClient.invalidateQueries('foo');
+        },
+        onError: (error) => {
+            console.error('Error adding foo:', error);
         },
     });
 };
